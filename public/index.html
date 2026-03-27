@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Grid | Louisville Career Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       RESET + TOKENS
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:      #FF5500;
+      --orange-hi:   #FF7733;
+      --orange-dim:  rgba(255,85,0,0.12);
+      --z-950:       #0C0C0C;
+      --z-900:       #141414;
+      --z-800:       #1F1F1F;
+      --z-700:       #2D2D2D;
+      --z-600:       #3D3D3D;
+      --z-500:       #5A5A5A;
+      --z-400:       #888888;
+      --z-300:       #B2B2B2;
+      --z-200:       #D4D4D4;
+      --z-100:       #F0F0F0;
+      --z-50:        #F8F8F8;
+      --white:       #FFFFFF;
+
+      --display:     'Barlow Condensed', sans-serif;
+      --body:        'Outfit', sans-serif;
+
+      --max:         1380px;
+      --gap:         12px;
+    }
+
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: var(--body);
+      background: var(--white);
+      color: var(--z-900);
+      overflow-x: hidden;
+    }
+
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    a   { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font-family: var(--body); }
+
+    /* ============================================================
+       SCROLL PROGRESS
+    ============================================================ */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: rgba(255,255,255,0.06); z-index: 200;
+      pointer-events: none;
+    }
+    #progress-fill {
+      height: 100%; background: var(--orange); width: 0%;
+      transition: width 0.06s linear;
+    }
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(12,12,12,0.94);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.3s ease;
+    }
+
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 20px; font-weight: 900;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white);
+    }
+    .nav-logo span { color: var(--orange); }
+
+    .nav-links {
+      display: flex; gap: 28px; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--display);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--z-300);
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-cta {
+      font-family: var(--display);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 9px 22px;
+      background: var(--orange); color: var(--white);
+      border-radius: 2px;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .nav-cta:hover { background: var(--orange-hi); transform: translateY(-1px); }
+
+    /* ============================================================
+       SCROLL REVEAL -- ALL elements start hidden, revealed by JS
+    ============================================================ */
+    .sr {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.65s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sr.d1 { transition-delay: 0.08s; }
+    .sr.d2 { transition-delay: 0.16s; }
+    .sr.d3 { transition-delay: 0.24s; }
+    .sr.d4 { transition-delay: 0.32s; }
+    .sr.on { opacity: 1; transform: translateY(0); }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      position: relative;
+      min-height: 100dvh;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+      background: var(--z-950);
+      padding-bottom: 80px;
+    }
+
+    #hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://picsum.photos/seed/louisville-urban-grit/1600/900') center/cover no-repeat;
+      transform: scale(1.1) translateY(0);
+      filter: brightness(0.22) saturate(0.5);
+      will-change: transform;
+    }
+
+    .hero-vignette {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, rgba(12,12,12,0.6) 0%, transparent 60%),
+        linear-gradient(to top, var(--z-950) 0%, transparent 45%);
+    }
+
+    .hero-grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: var(--max); margin: 0 auto; width: 100%;
+      padding: 0 40px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--display);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--orange);
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 22px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 30px; height: 1px; background: var(--orange);
+    }
+
+    .hero-h1 {
+      font-family: var(--display);
+      font-size: clamp(60px, 9vw, 130px);
+      font-weight: 900; line-height: 0.92;
+      letter-spacing: -0.01em; text-transform: uppercase;
+      color: var(--white);
+      max-width: 820px;
+      margin-bottom: 30px;
+    }
+    .hero-h1 em { font-style: normal; color: var(--orange); }
+
+    .hero-sub {
+      font-size: clamp(15px, 1.6vw, 19px);
+      font-weight: 400; line-height: 1.65;
+      color: var(--z-300);
+      max-width: 500px;
+      margin-bottom: 44px;
+    }
+
+    .hero-btns {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--display);
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 14px 36px; border-radius: 2px; cursor: pointer;
+      border: none;
+      transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-fill  { background: var(--orange); color: var(--white); }
+    .btn-fill:hover { background: var(--orange-hi); transform: translateY(-2px); }
+
+    .btn-line  { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.28); }
+    .btn-line:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+
+    .scroll-pulse {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      z-index: 2;
+    }
+    .scroll-pulse span {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--z-400);
+    }
+    .scroll-line {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, transparent, var(--orange));
+      animation: pulseY 2s ease-in-out infinite;
+    }
+    @keyframes pulseY {
+      0%,100% { opacity: 0.3; transform: scaleY(0.6); }
+      50%      { opacity: 1;   transform: scaleY(1); }
+    }
+
+    /* ============================================================
+       TICKER
+    ============================================================ */
+    .ticker {
+      background: var(--orange); overflow: hidden;
+      padding: 13px 0; user-select: none;
+    }
+    .ticker-wrap {
+      display: flex; width: max-content;
+      animation: ticker 36s linear infinite;
+    }
+    .ticker-wrap:hover { animation-play-state: paused; }
+    .ticker-item {
+      font-family: var(--display);
+      font-size: 13px; font-weight: 800;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--white);
+      padding: 0 36px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .ticker-item::after {
+      content: '';
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,0.45);
+      border-radius: 50%;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ============================================================
+       STATS COUNTER SECTION
+    ============================================================ */
+    .stats {
+      background: var(--z-950);
+      padding: 0;
+    }
+    .stats-grid {
+      max-width: var(--max); margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 2px;
+    }
+    .stat-cell {
+      background: var(--z-900);
+      padding: 52px 40px;
+      text-align: center;
+      border-top: 3px solid transparent;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .stat-cell:hover { border-top-color: var(--orange); background: var(--z-800); }
+    .stat-num {
+      font-family: var(--display);
+      font-size: clamp(48px, 5.5vw, 84px);
+      font-weight: 900; line-height: 1;
+      color: var(--white);
+    }
+    .stat-num .accent { color: var(--orange); }
+    .stat-label {
+      font-size: 13px; font-weight: 400;
+      color: var(--z-400);
+      margin-top: 14px; line-height: 1.5;
+    }
+
+    /* ============================================================
+       PITCH
+    ============================================================ */
+    .pitch {
+      padding: 140px 40px;
+      background: var(--white);
+    }
+    .pitch-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: grid; grid-template-columns: 5fr 7fr;
+      gap: 100px; align-items: center;
+    }
+    .pitch-h2 {
+      font-family: var(--display);
+      font-size: clamp(42px, 5vw, 76px);
+      font-weight: 900; line-height: 0.95;
+      text-transform: uppercase;
+      color: var(--z-950);
+    }
+    .pitch-h2 em { font-style: normal; color: var(--orange); }
+    .pitch-rule { width: 56px; height: 3px; background: var(--orange); margin-bottom: 28px; }
+    .pitch-body {
+      font-size: 17px; font-weight: 400; line-height: 1.8;
+      color: var(--z-600); margin-bottom: 22px;
+    }
+    .pitch-body strong { color: var(--z-900); font-weight: 600; }
+
+    /* ============================================================
+       PATHWAYS BENTO GRID
+    ============================================================ */
+    .pathways {
+      background: var(--z-50);
+      padding: 120px 40px;
+    }
+    .section-head {
+      max-width: var(--max); margin: 0 auto 56px;
+    }
+    .eyebrow {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--orange);
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .eyebrow::before {
+      content: ''; display: inline-block;
+      width: 22px; height: 2px; background: var(--orange);
+    }
+    .section-h2 {
+      font-family: var(--display);
+      font-size: clamp(38px, 4.5vw, 64px);
+      font-weight: 900; line-height: 0.96;
+      text-transform: uppercase; color: var(--z-950);
+    }
+    .section-h2 em { font-style: normal; color: var(--orange); }
+    .section-desc {
+      font-size: 15px; color: var(--z-500);
+      margin-top: 14px; max-width: 520px; line-height: 1.6;
+    }
+
+    /* Bento layout: 2fr 1fr 1fr top, 1fr 1fr bottom */
+    .bento {
+      max-width: var(--max); margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: var(--gap);
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--z-100);
+      padding: 36px;
+      position: relative; overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.3s ease;
+    }
+    .card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--orange);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 24px 64px rgba(0,0,0,0.07); }
+    .card:hover::after { transform: scaleX(1); }
+
+    /* Big featured card spans 2 rows */
+    .card-hero {
+      grid-row: span 2;
+      min-height: 500px;
+      background: var(--z-950);
+      padding: 48px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      border-color: transparent;
+    }
+    .card-hero .card-bg {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .card-hero .card-bg img {
+      filter: brightness(0.28);
+      transition: transform 0.6s ease;
+    }
+    .card-hero:hover .card-bg img { transform: scale(1.05); }
+    .card-hero::after { display: none; }
+    .card-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, var(--z-950) 20%, transparent 65%);
+      z-index: 1;
+    }
+    .card-hero-content { position: relative; z-index: 2; }
+
+    .card-num {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px;
+    }
+    .card-title {
+      font-family: var(--display);
+      font-size: clamp(22px, 2.5vw, 34px);
+      font-weight: 900; line-height: 1;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    .card-hero .card-title { color: var(--white); }
+    .card:not(.card-hero) .card-title { color: var(--z-950); }
+
+    .card-stats {
+      display: flex; gap: 20px; margin: 14px 0; flex-wrap: wrap;
+    }
+    .c-stat-val {
+      font-family: var(--display);
+      font-size: 21px; font-weight: 900; color: var(--orange);
+      display: block;
+    }
+    .c-stat-key {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      display: block;
+    }
+    .card-hero .c-stat-key { color: var(--z-400); }
+    .card:not(.card-hero) .c-stat-key { color: var(--z-500); }
+
+    .card-body {
+      font-size: 13px; line-height: 1.65; margin-bottom: 22px;
+    }
+    .card-hero .card-body { color: var(--z-300); }
+    .card:not(.card-hero) .card-body { color: var(--z-600); }
+
+    .card-link {
+      font-family: var(--display);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange);
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: gap 0.2s ease;
+    }
+    .card-link:hover { gap: 14px; }
+    .card-link::after { content: '→'; }
+
+    /* ============================================================
+       LOUISVILLE MARKET (dark section)
+    ============================================================ */
+    .market {
+      background: var(--z-950);
+      padding: 120px 40px;
+      position: relative; overflow: hidden;
+    }
+    .market::before {
+      content: 'LOUISVILLE';
+      position: absolute;
+      font-family: var(--display);
+      font-size: 22vw; font-weight: 900;
+      color: rgba(255,255,255,0.02);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap; pointer-events: none;
+    }
+    .market-inner { max-width: var(--max); margin: 0 auto; position: relative; z-index: 2; }
+    .market-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; margin-bottom: 72px;
+    }
+    .market-h2 {
+      font-family: var(--display);
+      font-size: clamp(42px, 5vw, 74px);
+      font-weight: 900; line-height: 0.94;
+      text-transform: uppercase; color: var(--white);
+    }
+    .market-h2 em { font-style: normal; color: var(--orange); }
+    .market-intro {
+      font-size: 17px; line-height: 1.75;
+      color: var(--z-300);
+      display: flex; align-items: flex-end;
+    }
+    .project-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 2px;
+    }
+    .project-cell {
+      background: var(--z-900);
+      padding: 36px 30px;
+      border-left: 3px solid transparent;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .project-cell:hover { border-left-color: var(--orange); background: var(--z-800); }
+    .pv {
+      font-family: var(--display);
+      font-size: 44px; font-weight: 900;
+      color: var(--orange); line-height: 1; margin-bottom: 8px;
+    }
+    .pn {
+      font-family: var(--display);
+      font-size: 15px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--white); margin-bottom: 8px;
+    }
+    .pd { font-size: 13px; color: var(--z-400); line-height: 1.6; }
+
+    /* ============================================================
+       ORGANIZATIONS HORIZONTAL SCROLL
+    ============================================================ */
+    .orgs { padding: 120px 0; background: var(--white); overflow: hidden; }
+    .orgs-head {
+      padding: 0 40px;
+      max-width: var(--max); margin: 0 auto 56px;
+    }
+    .orgs-scroller {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 4px 40px 24px;
+      cursor: grab;
+    }
+    .orgs-scroller:active { cursor: grabbing; }
+    .orgs-scroller::-webkit-scrollbar { display: none; }
+    .orgs-track { display: flex; gap: 14px; width: max-content; }
+
+    .org-card {
+      width: 272px; flex-shrink: 0;
+      border: 1px solid var(--z-100);
+      padding: 28px 26px;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .org-card:hover { border-color: var(--orange); transform: translateY(-4px); }
+    .org-type {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px;
+    }
+    .org-name {
+      font-family: var(--display);
+      font-size: 18px; font-weight: 900;
+      text-transform: uppercase; color: var(--z-950);
+      line-height: 1.05; margin-bottom: 10px;
+    }
+    .org-body { font-size: 13px; color: var(--z-500); line-height: 1.6; margin-bottom: 18px; }
+    .org-link {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--orange);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: gap 0.2s ease;
+    }
+    .org-link:hover { gap: 10px; }
+    .org-link::after { content: '→'; }
+
+    /* ============================================================
+       HIDDEN JOBS TABLE
+    ============================================================ */
+    .jobs { background: var(--z-50); padding: 120px 40px; }
+    .jobs-inner { max-width: var(--max); margin: 0 auto; }
+    .jobs-table { border-top: 1px solid var(--z-200); margin-top: 56px; }
+    .job-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 1fr auto;
+      gap: 40px; align-items: center;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--z-200);
+      cursor: default;
+      transition: padding 0.2s ease;
+    }
+    .job-row:hover .j-name { color: var(--orange); }
+    .j-num {
+      font-family: var(--display);
+      font-size: 12px; font-weight: 700; color: var(--z-300);
+    }
+    .j-name {
+      font-family: var(--display);
+      font-size: 22px; font-weight: 900;
+      text-transform: uppercase; color: var(--z-950);
+      transition: color 0.2s ease;
+    }
+    .j-desc { font-size: 13px; color: var(--z-500); line-height: 1.5; }
+    .j-pay {
+      font-family: var(--display);
+      font-size: 19px; font-weight: 900;
+      color: var(--orange); white-space: nowrap;
+      text-align: right;
+    }
+
+    /* ============================================================
+       COMMUNITY CONTRIBUTE
+    ============================================================ */
+    .contribute {
+      background: var(--orange);
+      padding: 120px 40px;
+      position: relative; overflow: hidden;
+    }
+    .contribute::after {
+      content: 'YOUR MOVE';
+      position: absolute;
+      font-family: var(--display);
+      font-size: 18vw; font-weight: 900;
+      color: rgba(0,0,0,0.07);
+      bottom: -30px; right: -20px;
+      white-space: nowrap; pointer-events: none;
+    }
+    .contribute-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: grid; grid-template-columns: 5fr 7fr;
+      gap: 100px; align-items: center;
+      position: relative; z-index: 2;
+    }
+    .c-h2 {
+      font-family: var(--display);
+      font-size: clamp(42px, 5vw, 76px);
+      font-weight: 900; line-height: 0.95;
+      text-transform: uppercase; color: var(--white);
+      margin-bottom: 22px;
+    }
+    .c-sub {
+      font-size: 17px; line-height: 1.7;
+      color: rgba(255,255,255,0.8);
+    }
+    .c-form { display: flex; flex-direction: column; gap: 14px; }
+    .f-label {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 6px; display: block;
+    }
+    .f-input, .f-select, .f-ta {
+      width: 100%; padding: 13px 15px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 2px;
+      color: var(--white); font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .f-input::placeholder, .f-ta::placeholder { color: rgba(255,255,255,0.38); }
+    .f-input:focus, .f-select:focus, .f-ta:focus {
+      border-color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.22);
+    }
+    .f-select option { color: var(--z-950); background: var(--white); }
+    .f-ta { height: 96px; resize: vertical; }
+    .f-submit {
+      align-self: flex-start;
+      font-family: var(--display);
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 14px 38px;
+      background: var(--z-950); color: var(--white);
+      border: none; border-radius: 2px; cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .f-submit:hover { background: var(--z-800); transform: translateY(-2px); }
+    .f-submit:active { transform: scale(0.97); }
+
+    /* ============================================================
+       RESOURCES
+    ============================================================ */
+    .resources { padding: 120px 40px; background: var(--white); }
+    .resources-inner { max-width: var(--max); margin: 0 auto; }
+    .res-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: var(--gap);
+      margin-top: 56px;
+    }
+    .res-card {
+      border: 1px solid var(--z-100);
+      padding: 30px 28px;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+      position: relative;
+    }
+    .res-card:hover { border-color: var(--orange); transform: translateY(-3px); }
+    .res-cat {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px;
+    }
+    .res-title {
+      font-family: var(--display);
+      font-size: 18px; font-weight: 900;
+      text-transform: uppercase; color: var(--z-950);
+      margin-bottom: 8px;
+    }
+    .res-body { font-size: 13px; color: var(--z-500); line-height: 1.6; margin-bottom: 18px; }
+    .res-link {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--orange);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: gap 0.2s ease;
+    }
+    .res-link:hover { gap: 10px; }
+    .res-link::after { content: '→'; }
+
+    /* Featured resource: first card spans 2 columns */
+    .res-card.wide {
+      grid-column: span 2;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    }
+    .res-card.wide .res-body { max-width: 360px; }
+
+    /* ============================================================
+       CALLOUT STRIP
+    ============================================================ */
+    .strip {
+      background: var(--z-950);
+      padding: 60px 40px;
+    }
+    .strip-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 40px;
+    }
+    .strip-text {
+      font-family: var(--display);
+      font-size: clamp(26px, 3vw, 44px);
+      font-weight: 900; text-transform: uppercase;
+      color: var(--white); line-height: 1;
+    }
+    .strip-text em { font-style: normal; color: var(--orange); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--z-900);
+      padding: 64px 40px 36px;
+      border-top: 1px solid var(--z-800);
+    }
+    .footer-inner { max-width: var(--max); margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr;
+      gap: 60px; margin-bottom: 56px;
+    }
+    .f-logo {
+      font-family: var(--display);
+      font-size: 26px; font-weight: 900;
+      text-transform: uppercase; color: var(--white);
+      margin-bottom: 14px;
+    }
+    .f-logo span { color: var(--orange); }
+    .f-tagline { font-size: 13px; color: var(--z-400); line-height: 1.65; max-width: 280px; }
+    .f-col-title {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--z-300); margin-bottom: 18px;
+    }
+    .f-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .f-links a { font-size: 13px; color: var(--z-500); transition: color 0.2s ease; }
+    .f-links a:hover { color: var(--orange); }
+    .footer-bottom {
+      border-top: 1px solid var(--z-800); padding-top: 22px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .f-copy { font-size: 12px; color: var(--z-600); }
+    .f-credit {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--z-600);
+    }
+    .f-credit span { color: var(--orange); }
+
+    /* ============================================================
+       PATH FINDER QUIZ
+    ============================================================ */
+    .quiz {
+      background: var(--z-950);
+      padding: 100px 40px;
+      position: relative; overflow: hidden;
+    }
+    .quiz::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: var(--orange);
+    }
+    .quiz-inner { max-width: 900px; margin: 0 auto; }
+    .quiz-head  { text-align: center; margin-bottom: 56px; }
+    .quiz-step  {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 16px;
+    }
+    .quiz-q {
+      font-family: var(--display);
+      font-size: clamp(30px, 5vw, 52px);
+      font-weight: 900; text-transform: uppercase;
+      color: var(--white); line-height: 1.02;
+    }
+    .quiz-opts {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    }
+    .quiz-opt {
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 3px; cursor: pointer; text-align: left;
+      background: transparent; color: var(--white);
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+    .quiz-opt:hover {
+      border-color: var(--orange);
+      background: rgba(255,85,0,0.06);
+      transform: translateY(-2px);
+    }
+    .quiz-opt:active { transform: scale(0.98); }
+    .quiz-opt-label {
+      font-family: var(--display);
+      font-size: 20px; font-weight: 900;
+      text-transform: uppercase; color: var(--white);
+      line-height: 1.1; margin-bottom: 8px;
+    }
+    .quiz-opt-sub { font-size: 13px; color: var(--z-400); line-height: 1.5; }
+    .quiz-progress {
+      display: flex; justify-content: center; gap: 8px; margin-bottom: 52px;
+    }
+    .q-dot {
+      width: 36px; height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,0.12);
+      transition: background 0.3s ease;
+    }
+    .q-dot.active { background: var(--orange); }
+    .q-dot.done   { background: rgba(255,85,0,0.38); }
+
+    /* Result panel */
+    .quiz-result { display: none; text-align: center; padding: 20px 0; }
+    .quiz-result.show { display: block; }
+    .qr-label {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 20px;
+    }
+    .qr-pathway {
+      font-family: var(--display);
+      font-size: clamp(38px, 6vw, 76px);
+      font-weight: 900; text-transform: uppercase;
+      color: var(--white); line-height: 0.95;
+      margin-bottom: 24px;
+    }
+    .qr-desc {
+      font-size: 16px; color: var(--z-300);
+      line-height: 1.75; max-width: 580px; margin: 0 auto 40px;
+    }
+    .qr-stats {
+      display: flex; justify-content: center; gap: 48px;
+      margin-bottom: 44px; flex-wrap: wrap;
+    }
+    .qr-stat-val {
+      font-family: var(--display);
+      font-size: 36px; font-weight: 900; color: var(--orange);
+    }
+    .qr-stat-key {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--z-400); display: block; margin-top: 4px;
+    }
+    .qr-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .quiz-reset {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--z-500); cursor: pointer;
+      background: none; border: none;
+      margin: 28px auto 0; display: block;
+      transition: color 0.2s ease;
+    }
+    .quiz-reset:hover { color: var(--white); }
+
+    /* ============================================================
+       COMMUNITY VOICES
+    ============================================================ */
+    .voices { background: var(--z-50); padding: 100px 40px; }
+    .voices-inner { max-width: var(--max); margin: 0 auto; }
+    .voices-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 2px;
+      margin-top: 56px;
+    }
+    .voice-card {
+      background: var(--white); padding: 40px 36px;
+      border-left: 3px solid transparent;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .voice-card:hover { border-color: var(--orange); background: #FFFCFA; }
+    .voice-quote {
+      font-size: 15px; line-height: 1.75;
+      color: var(--z-800); margin-bottom: 28px;
+      font-style: italic;
+    }
+    .voice-quote::before { content: '\201C'; color: var(--orange); }
+    .voice-quote::after  { content: '\201D'; color: var(--orange); }
+    .voice-who {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--z-500);
+    }
+    .voice-pathway {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-top: 6px;
+    }
+
+    /* ============================================================
+       SHARE BUTTON
+    ============================================================ */
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      background: none; border: none; cursor: pointer; padding: 0;
+      margin-top: 14px;
+      transition: color 0.2s ease;
+    }
+    .share-btn:hover { color: var(--orange); }
+    .share-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .card:not(.card-hero) .share-btn { color: var(--z-400); }
+    .card:not(.card-hero) .share-btn:hover { color: var(--orange); }
+
+    /* ============================================================
+       MOBILE COLLAPSE
+    ============================================================ */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero-content, .pitch-inner, .market-inner, .contribute-inner,
+      .footer-inner { padding-left: 20px; padding-right: 20px; }
+      .hero-h1 { font-size: clamp(48px, 12vw, 80px); }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .pitch-inner  { grid-template-columns: 1fr; gap: 40px; }
+      .pitch    { padding: 80px 20px; }
+      .bento        { grid-template-columns: 1fr; }
+      .card-hero    { min-height: 340px; }
+      .market-top   { grid-template-columns: 1fr; gap: 36px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .market   { padding: 80px 20px; }
+      .contribute-inner { grid-template-columns: 1fr; gap: 40px; }
+      .contribute { padding: 80px 20px; }
+      .res-grid     { grid-template-columns: 1fr; }
+      .res-card.wide { grid-column: span 1; display: block; }
+      .footer-top   { grid-template-columns: 1fr; gap: 32px; }
+      .strip-inner  { flex-direction: column; text-align: center; }
+      .job-row { grid-template-columns: 1fr auto; gap: 12px; }
+      .j-num, .j-desc { display: none; }
+      .pathways, .jobs, .orgs, .resources { padding: 80px 20px; }
+      .quiz { padding: 80px 20px; }
+      .voices { padding: 80px 20px; }
+      .quiz-opts { grid-template-columns: 1fr; }
+      .voices-grid { grid-template-columns: 1fr; }
+      .qr-stats { gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS BAR -->
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-logo">THE <span>GRID</span></div>
+  <ul class="nav-links">
+    <li><a href="#pathways">Pathways</a></li>
+    <li><a href="#market">Louisville</a></li>
+    <li><a href="#orgs">Organizations</a></li>
+    <li><a href="#jobs">Hidden Jobs</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+  <a href="#contribute" class="nav-cta">Share What You Know</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div id="hero-bg"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Louisville Career Intelligence</div>
+    <h1 class="hero-h1">
+      Louisville's<br>
+      <em>Hidden Economy</em><br>
+      Is Hiring.
+    </h1>
+    <p class="hero-sub">
+      The careers nobody taught you about. The paths nobody mapped.
+      Skip the debt. Find the work. Build the life.
+    </p>
+    <div class="hero-btns">
+      <a href="#pathways" class="btn btn-fill">Explore Pathways</a>
+      <a href="#contribute" class="btn btn-line">Share What You Know</a>
+    </div>
+  </div>
+  <div class="scroll-pulse">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-wrap" id="ticker-inner">
+    <span class="ticker-item">Electrical Trades</span>
+    <span class="ticker-item">Drone Mapping</span>
+    <span class="ticker-item">HVAC Systems</span>
+    <span class="ticker-item">Code Louisville</span>
+    <span class="ticker-item">IEC Kentuckiana</span>
+    <span class="ticker-item">IBEW Local 369</span>
+    <span class="ticker-item">LiDAR Scanning</span>
+    <span class="ticker-item">Culinary Arts</span>
+    <span class="ticker-item">JCTC</span>
+    <span class="ticker-item">Building Systems</span>
+    <span class="ticker-item">ACE Mentor</span>
+    <span class="ticker-item">Entrepreneurship</span>
+    <span class="ticker-item">Solar PV</span>
+    <span class="ticker-item">Fiber Optics</span>
+    <!-- Duplicate set for seamless loop -->
+    <span class="ticker-item">Electrical Trades</span>
+    <span class="ticker-item">Drone Mapping</span>
+    <span class="ticker-item">HVAC Systems</span>
+    <span class="ticker-item">Code Louisville</span>
+    <span class="ticker-item">IEC Kentuckiana</span>
+    <span class="ticker-item">IBEW Local 369</span>
+    <span class="ticker-item">LiDAR Scanning</span>
+    <span class="ticker-item">Culinary Arts</span>
+    <span class="ticker-item">JCTC</span>
+    <span class="ticker-item">Building Systems</span>
+    <span class="ticker-item">ACE Mentor</span>
+    <span class="ticker-item">Entrepreneurship</span>
+    <span class="ticker-item">Solar PV</span>
+    <span class="ticker-item">Fiber Optics</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats" id="stats">
+  <div class="stats-grid">
+    <div class="stat-cell sr">
+      <div class="stat-num"><span class="count" data-target="47">0</span><span class="accent">+</span></div>
+      <div class="stat-label">Career pathways mapped<br>in Louisville right now</div>
+    </div>
+    <div class="stat-cell sr d1">
+      <div class="stat-num"><span class="accent">$</span><span class="count" data-target="42">0</span><span class="accent">K</span></div>
+      <div class="stat-label">Average starting pay for<br>trades in Kentucky</div>
+    </div>
+    <div class="stat-cell sr d2">
+      <div class="stat-num"><span class="accent">$</span><span class="count" data-target="10">0</span><span class="accent">B+</span></div>
+      <div class="stat-label">Active construction<br>in the Louisville region</div>
+    </div>
+    <div class="stat-cell sr d3">
+      <div class="stat-num"><span class="count" data-target="0">0</span><span class="accent"> debt</span></div>
+      <div class="stat-label">Required to start most<br>trade apprenticeships</div>
+    </div>
+  </div>
+</section>
+
+<!-- PITCH -->
+<section class="pitch" id="pitch">
+  <div class="pitch-inner">
+    <div class="sr">
+      <h2 class="pitch-h2">
+        College is<br>one road.<br>
+        Louisville<br>has <em>twelve.</em>
+      </h2>
+    </div>
+    <div class="sr d2">
+      <div class="pitch-rule"></div>
+      <p class="pitch-body">
+        Nobody handed you a map. That's not an accident.
+        The trades, the certifications, the apprenticeships, the emerging tech fields,
+        the programs quietly building careers for thousands of Louisville young people
+        every year -- <strong>they don't advertise on billboards.</strong>
+      </p>
+      <p class="pitch-body">
+        The Grid exists to fix that. We map the paths, connect the people,
+        and give you enough real information to make a real decision.
+        Not a college brochure. Not a guidance counselor's default answer.
+        <strong>The actual picture of what's possible.</strong>
+      </p>
+      <p class="pitch-body">
+        Trades pay $40K on day one while you're still training.
+        Drone mapping has a six-figure ceiling with a Part 107 cert and a $15K drone.
+        Louisville is mid one of the biggest construction booms in its history.
+        The workers to fill it? <strong>That's you, if you know where to look.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- PATH FINDER QUIZ -->
+<section class="quiz" id="quiz">
+  <div class="quiz-inner">
+    <div class="quiz-progress" id="quiz-progress">
+      <div class="q-dot active" data-step="0"></div>
+      <div class="q-dot" data-step="1"></div>
+      <div class="q-dot" data-step="2"></div>
+    </div>
+
+    <div id="quiz-question" class="sr">
+      <div class="quiz-head">
+        <div class="quiz-step" id="quiz-step-label">Question 1 of 3</div>
+        <div class="quiz-q" id="quiz-q-text">What sounds like your kind of day?</div>
+      </div>
+      <div class="quiz-opts" id="quiz-opts"></div>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div class="qr-label">Your Path on The Grid</div>
+      <div class="qr-pathway" id="qr-pathway-name"></div>
+      <p class="qr-desc" id="qr-pathway-desc"></p>
+      <div class="qr-stats" id="qr-stats"></div>
+      <div class="qr-actions">
+        <a href="#pathways" class="btn btn-fill">See the Full Pathway</a>
+        <a href="#contribute" class="btn btn-line">Ask a Question</a>
+      </div>
+      <button class="quiz-reset" id="quiz-reset">Start over</button>
+    </div>
+  </div>
+</section>
+
+<!-- PATHWAYS BENTO -->
+<section class="pathways" id="pathways">
+  <div class="section-head">
+    <div class="eyebrow sr">Career Pathways</div>
+    <h2 class="section-h2 sr d1">Find Your <em>Angle</em></h2>
+    <p class="section-desc sr d2">Six paths worth knowing. All build real careers. None start with four years and $80K of debt.</p>
+  </div>
+
+  <div class="bento" style="max-width:var(--max);margin:0 auto;">
+
+    <!-- FEATURED: Electrical -->
+    <div class="card card-hero sr">
+      <div class="card-bg">
+        <img src="https://picsum.photos/seed/electrician-conduit/800/700" alt="Electrical Trades">
+      </div>
+      <div class="card-hero-content">
+        <div class="card-num">01 -- Featured Pathway</div>
+        <div class="card-title">Electrical Trades</div>
+        <div class="card-stats">
+          <div>
+            <span class="c-stat-val">$41/hr</span>
+            <span class="c-stat-key">Journeyman Rate</span>
+          </div>
+          <div>
+            <span class="c-stat-val">4 yrs</span>
+            <span class="c-stat-key">To Journeyman</span>
+          </div>
+          <div>
+            <span class="c-stat-val">$0</span>
+            <span class="c-stat-key">IBEW Tuition</span>
+          </div>
+        </div>
+        <p class="card-body">
+          The strongest single pathway in Louisville right now. $10B in regional
+          construction. Two routes: IBEW Local 369 (union, competitive, elite benefits)
+          or IEC Kentuckiana (non-union, open enrollment, faster path to ownership).
+          Both lead to the same Kentucky state journeyman license.
+        </p>
+        <a href="#orgs" class="card-link">Explore this path</a>
+        <button class="share-btn" data-pathway="Electrical Trades" aria-label="Share Electrical Trades pathway">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          Share this path
+        </button>
+      </div>
+    </div>
+
+    <!-- Drone Mapping -->
+    <div class="card sr d1">
+      <div class="card-num">02 -- Emerging Tech</div>
+      <div class="card-title">Drone Mapping</div>
+      <div class="card-stats">
+        <div>
+          <span class="c-stat-val">$65K+</span>
+          <span class="c-stat-key">Year 3 Ceiling</span>
+        </div>
+        <div>
+          <span class="c-stat-val">$300</span>
+          <span class="c-stat-key">Part 107 Exam</span>
+        </div>
+      </div>
+      <p class="card-body">Fly drones. Capture data. Send it to engineers. The collector model is real and Louisville has a market gap. Two competitors in the region. One CalIfornia operator already working local contacts.</p>
+      <a href="#jobs" class="card-link">See the details</a>
+      <button class="share-btn" data-pathway="Drone Mapping" aria-label="Share Drone Mapping pathway">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        Share this path
+      </button>
+    </div>
+
+    <!-- Tech Without Degree -->
+    <div class="card sr d2">
+      <div class="card-num">03 -- Digital</div>
+      <div class="card-title">Tech Without the Degree</div>
+      <div class="card-stats">
+        <div>
+          <span class="c-stat-val">Free</span>
+          <span class="c-stat-key">Code Louisville</span>
+        </div>
+        <div>
+          <span class="c-stat-val">Remote</span>
+          <span class="c-stat-key">Options Real</span>
+        </div>
+      </div>
+      <p class="card-body">Coding, QA, IT, building systems. Code Louisville is city-funded and free. Remote work opens the national market. Portfolio beats credential in most Louisville tech hiring rooms.</p>
+      <a href="#jobs" class="card-link">See the details</a>
+      <button class="share-btn" data-pathway="Tech Without a Degree" aria-label="Share Tech pathway">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        Share this path
+      </button>
+    </div>
+
+    <!-- HVAC -->
+    <div class="card sr d1">
+      <div class="card-num">04 -- Trades</div>
+      <div class="card-title">HVAC Systems</div>
+      <div class="card-stats">
+        <div>
+          <span class="c-stat-val">$55K</span>
+          <span class="c-stat-key">Louisville Median</span>
+        </div>
+        <div>
+          <span class="c-stat-val">2 yrs</span>
+          <span class="c-stat-key">To Certification</span>
+        </div>
+      </div>
+      <p class="card-body">Heating, cooling, refrigeration. JCTC runs a full program. Every building in Louisville runs on HVAC. High demand, steady work, great ceiling for small business owners who want to run their own shop.</p>
+      <a href="#orgs" class="card-link">Explore this path</a>
+      <button class="share-btn" data-pathway="HVAC Systems" aria-label="Share HVAC pathway">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        Share this path
+      </button>
+    </div>
+
+    <!-- Culinary -->
+    <div class="card sr d2">
+      <div class="card-num">05 -- Food + Bev</div>
+      <div class="card-title">Culinary Louisville</div>
+      <div class="card-stats">
+        <div>
+          <span class="c-stat-val">NuLu</span>
+          <span class="c-stat-key">Scene + Mentors</span>
+        </div>
+        <div>
+          <span class="c-stat-val">Logan St</span>
+          <span class="c-stat-key">Market Incubator</span>
+        </div>
+      </div>
+      <p class="card-body">Louisville has a real food scene and a real path into it. Staging, working your way up, food hall incubators, cottage food law. The honest picture alongside the dream.</p>
+      <a href="#jobs" class="card-link">See the details</a>
+      <button class="share-btn" data-pathway="Culinary Louisville" aria-label="Share Culinary pathway">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        Share this path
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- LOUISVILLE MARKET -->
+<section class="market" id="market">
+  <div class="market-inner">
+    <div class="market-top">
+      <h2 class="market-h2 sr">
+        Louisville<br>Is <em>Building.</em><br>
+        Who's<br>Building It?
+      </h2>
+      <div class="market-intro sr d2">
+        <p>
+          The city is mid one of the most concentrated capital investment cycles in its history.
+          BlueOvalSK. Ford. Nucor. Norton. UPS Worldport expansion. The workers who install,
+          wire, scan, commission, and maintain all of it -- that pipeline has a real gap.
+          The Grid is mapping it so you can fill it.
+        </p>
+      </div>
+    </div>
+    <div class="project-grid">
+      <div class="project-cell sr">
+        <div class="pv">$5.8B</div>
+        <div class="pn">BlueOvalSK Battery Park</div>
+        <p class="pd">Ford and SK Innovation. Glendale, KY. 9 million sq ft. Largest economic investment in Kentucky history. Electrical workers still commissioning systems through 2026.</p>
+      </div>
+      <div class="project-cell sr d1">
+        <div class="pv">$2B</div>
+        <div class="pn">Ford Assembly Plant Retooling</div>
+        <p class="pd">Louisville Assembly converting to full EV production. New automation, 5G infrastructure, industrial controls. Active through 2027. 2,200 hourly jobs secured.</p>
+      </div>
+      <div class="project-cell sr d2">
+        <div class="pv">$1.7B</div>
+        <div class="pn">Nucor Steel Brandenburg</div>
+        <p class="pd">Grand opening October 2025. 440 permanent jobs. $826M expansion already announced. Electrical maintenance, automation tech roles ongoing and growing.</p>
+      </div>
+      <div class="project-cell sr d1">
+        <div class="pv">$1B</div>
+        <div class="pn">Norton Children's Campus</div>
+        <p class="pd">150+ acres in Jeffersontown. Phased hospital build. Hospital construction is one of the most electrically intensive building types in existence. Phases continue past 2028.</p>
+      </div>
+      <div class="project-cell sr d2">
+        <div class="pv">9.5%</div>
+        <div class="pn">Electrician Job Growth</div>
+        <p class="pd">Projected nationally 2024 to 2034. Three times the average for all occupations. IBEW Local 369 is actively recruiting journeymen right now -- demand outstrips supply.</p>
+      </div>
+      <div class="project-cell sr d3">
+        <div class="pv">10M+</div>
+        <div class="pn">Sq Ft of New Logistics</div>
+        <p class="pd">New warehouse and distribution added in recent years. UPS Worldport. Amazon. Every automated facility needs EV charging, controls, and fiber. Work does not stop.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY VOICES -->
+<section class="voices" id="voices">
+  <div class="voices-inner">
+    <div class="section-head">
+      <div class="eyebrow sr">From the Grid</div>
+      <h2 class="section-h2 sr d1">People Who<br><em>Figured It Out</em></h2>
+      <p class="section-desc sr d2">Real people. Real paths. No fluff about following your dreams without a map.</p>
+    </div>
+    <div class="voices-grid">
+      <div class="voice-card sr">
+        <p class="voice-quote">I walked into the IEC office not knowing what to expect. Three years later I'm making $22 an hour and I don't have a dollar of student loan debt. None of my college friends can say that.</p>
+        <div class="voice-who">Marcus T., 22</div>
+        <div class="voice-pathway">Electrical Trades -- IEC Kentuckiana</div>
+      </div>
+      <div class="voice-card sr d1">
+        <p class="voice-quote">My son had no idea what he wanted to do after high school. We found The Grid and two months later he had his Part 107 cert and a part-time contract flying surveys for a civil engineering firm.</p>
+        <div class="voice-who">Parent, East End Louisville</div>
+        <div class="voice-pathway">Drone Mapping / LiDAR</div>
+      </div>
+      <div class="voice-card sr d2">
+        <p class="voice-quote">Code Louisville was the best kept secret in this city. Twelve weeks, free, real mentors. I landed a remote QA role at $58K six months after finishing. Nobody told me this existed until I found this site.</p>
+        <div class="voice-who">Jess P., 26</div>
+        <div class="voice-pathway">Tech Without a Degree</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:48px;">
+      <a href="#contribute" class="btn btn-fill sr d1">Add Your Story to the Grid</a>
+    </div>
+  </div>
+</section>
+
+<!-- ORGANIZATIONS -->
+<section class="orgs" id="orgs">
+  <div class="orgs-head">
+    <div class="eyebrow sr">Louisville's Network</div>
+    <h2 class="section-h2 sr d1">The Organizations<br>Actually <em>Doing the Work</em></h2>
+    <p class="section-desc sr d2">These are the doors. Some are obvious. Most are not. Drag to scroll.</p>
+  </div>
+  <div class="orgs-scroller" id="orgs-scroll">
+    <div class="orgs-track">
+
+      <div class="org-card">
+        <div class="org-type">Electrical -- Union</div>
+        <div class="org-name">IBEW Local 369</div>
+        <p class="org-body">Louisville's electrical union with 3,000+ members. Free apprenticeship, $41/hr journeyman rate, full health and pension. Application closed -- monitor loujatc.com for the next window.</p>
+        <a href="https://www.ibewlocal369.com" target="_blank" rel="noopener" class="org-link">ibewlocal369.com</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Electrical -- Non-Union</div>
+        <div class="org-name">IEC Kentuckiana</div>
+        <p class="org-body">Open enrollment. 4-year apprenticeship. 51 JCTC college credits built in. Application opens April 1, 2026. Plug In Saturday tryout is $100 and a great starting point.</p>
+        <a href="https://www.iec-kyin.com" target="_blank" rel="noopener" class="org-link">iec-kyin.com</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Community College</div>
+        <div class="org-name">JCTC</div>
+        <p class="org-body">Jefferson Community and Technical College. Electrical Technology, HVAC, and more at the downtown campus. Multiple certificate and degree tracks. Tour available during Spring Break.</p>
+        <a href="https://jefferson.kctcs.edu" target="_blank" rel="noopener" class="org-link">jefferson.kctcs.edu</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Coding -- Free</div>
+        <div class="org-name">Code Louisville</div>
+        <p class="org-body">City-sponsored coding education. Free programs in web development and data analytics. Real mentors. One of the most underused resources for Louisville young people interested in tech.</p>
+        <a href="https://www.codelouisville.org" target="_blank" rel="noopener" class="org-link">codelouisville.org</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Architecture + Construction</div>
+        <div class="org-name">ACE Mentor Program</div>
+        <p class="org-body">Architecture, Construction, Engineering mentorship for high schoolers. Louisville chapter connects students to real professionals in the field. Scholarships available for motivated participants.</p>
+        <a href="https://acementor.org" target="_blank" rel="noopener" class="org-link">acementor.org</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Business + Entrepreneurship</div>
+        <div class="org-name">SCORE Louisville</div>
+        <p class="org-body">Free mentorship from retired executives. Business plan help, one-on-one coaching, workshops. Actually useful for a 20-year-old, not just established business owners looking to grow.</p>
+        <a href="https://louisville.score.org" target="_blank" rel="noopener" class="org-link">louisville.score.org</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Pre-Apprenticeship -- Free</div>
+        <div class="org-name">Kentuckiana Builds</div>
+        <p class="org-body">Free six-week pre-apprenticeship through the Louisville Urban League. Gets you ready for IEC or IBEW entry requirements. If the programs feel out of reach right now, start here.</p>
+        <a href="tel:5028081056" class="org-link">502-808-1056</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">State Workforce</div>
+        <div class="org-name">KY Skills U</div>
+        <p class="org-body">State-level adult education and workforce credentialing. GED, WorkKeys, industry certifications. The bridge between where you are and where the programs require you to be before entry.</p>
+        <a href="https://skillsu.ky.gov" target="_blank" rel="noopener" class="org-link">skillsu.ky.gov</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Drone Tech</div>
+        <div class="org-name">Drone Scope Mapping</div>
+        <p class="org-body">Active drone mapping operator working Louisville-area clients. Potential mentor connection for young people exploring the drone and LiDAR career pathway. Real operator, real market knowledge.</p>
+        <a href="https://www.dronescopemapping.com" target="_blank" rel="noopener" class="org-link">dronescopemapping.com</a>
+      </div>
+
+      <div class="org-card">
+        <div class="org-type">Economic Development</div>
+        <div class="org-name">Greater Louisville Inc.</div>
+        <p class="org-body">Louisville's chamber runs workforce development initiatives and employer connection programs. Less known as a resource for young people. Worth a call if you are mapping new sectors or connections.</p>
+        <a href="https://www.greaterlouisville.com" target="_blank" rel="noopener" class="org-link">greaterlouisville.com</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HIDDEN JOBS -->
+<section class="jobs" id="jobs">
+  <div class="jobs-inner">
+    <div class="section-head">
+      <div class="eyebrow sr">Obscure Opportunities</div>
+      <h2 class="section-h2 sr d1">The Jobs Nobody<br>Told You <em>Existed</em></h2>
+      <p class="section-desc sr d2">Real careers with real pay and real futures. Nobody mentioned them on career day.</p>
+    </div>
+    <div class="jobs-table">
+      <div class="job-row sr">
+        <span class="j-num">01</span>
+        <span class="j-name">LiDAR Data Collector</span>
+        <span class="j-desc">Fly commercial drones, capture point cloud data, deliver to engineers. Part 107 cert plus one good drone. Louisville market is wide open with two regional competitors total.</span>
+        <span class="j-pay">$55-85K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">02</span>
+        <span class="j-name">BIM Specialist</span>
+        <span class="j-desc">Building Information Modeling. 3D digital models of buildings for architects and contractors. Software skills, no degree required in most firms. Remote-friendly and high demand.</span>
+        <span class="j-pay">$60-90K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">03</span>
+        <span class="j-name">Industrial Automation Tech</span>
+        <span class="j-desc">Program and maintain the robots in factories. BlueOvalSK, Ford, Nucor all need these people right now. IBEW apprenticeship includes an automation track at no extra cost.</span>
+        <span class="j-pay">$65-100K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">04</span>
+        <span class="j-name">Building Systems Integrator</span>
+        <span class="j-desc">Sits at the intersection of architecture, technology, and data. Smart buildings, HVAC controls, digital twin systems. Highly exportable skill set. Remote and international market viable.</span>
+        <span class="j-pay">$70-120K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">05</span>
+        <span class="j-name">Solar PV Installer</span>
+        <span class="j-desc">IBEW apprenticeship includes NABCEP solar certification at zero additional cost. Growing fast. Louisville's flat rooftops and suburban sprawl are a goldmine for residential solar contracts.</span>
+        <span class="j-pay">$45-70K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">06</span>
+        <span class="j-name">Fiber Optic Technician</span>
+        <span class="j-desc">Install and test the infrastructure the internet runs on. Short certification path. Louisville's logistics density means constant demand for fiber installs and upgrades across the metro.</span>
+        <span class="j-pay">$48-72K</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">07</span>
+        <span class="j-name">Food Hall Operator</span>
+        <span class="j-desc">Logan Street Market model. Shared kitchen, low startup cost, built-in foot traffic. Learn the business side of food without opening a restaurant cold and betting everything at once.</span>
+        <span class="j-pay">Variable</span>
+      </div>
+      <div class="job-row sr">
+        <span class="j-num">08</span>
+        <span class="j-name">EV Charging Installer</span>
+        <span class="j-desc">Every parking garage, multifamily building, and corporate campus is adding EV charging now. Electrical base skill set, growing fast, with specialized certification available through IBEW training.</span>
+        <span class="j-pay">$50-75K</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRIBUTE -->
+<section class="contribute" id="contribute">
+  <div class="contribute-inner">
+    <div>
+      <h2 class="c-h2 sr">You Know<br>Something<br>We Don't.</h2>
+      <p class="c-sub sr d1">
+        The Grid gets smarter when real people add to it.
+        Tell us what you found, who helped you, where the gaps are.
+        Every submission builds the map for the next person who doesn't know where to start.
+      </p>
+    </div>
+    <!-- ACTION: Replace YOUR_FORM_ID with your Formspree form ID from formspree.io -->
+    <form class="c-form sr d2" id="grid-form"
+          action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input type="hidden" name="_subject" value="New Grid Submission">
+      <input type="hidden" name="_source" value="The Grid Louisville">
+      <div>
+        <label class="f-label">Your name (optional)</label>
+        <input type="text" name="name" class="f-input" placeholder="First name is fine">
+      </div>
+      <div>
+        <label class="f-label">Email -- only if you want a response (optional)</label>
+        <input type="email" name="_replyto" class="f-input" placeholder="you@email.com">
+      </div>
+      <div>
+        <label class="f-label">I am a...</label>
+        <select name="role" class="f-select">
+          <option value="">Select one</option>
+          <option>Student / Young Person</option>
+          <option>Parent</option>
+          <option>Educator / Counselor</option>
+          <option>Employer / Practitioner</option>
+          <option>Community Member</option>
+        </select>
+      </div>
+      <div>
+        <label class="f-label">What pathway are you exploring?</label>
+        <select name="pathway" class="f-select">
+          <option value="">Choose a pathway</option>
+          <option>Electrical Trades</option>
+          <option>Drone / LiDAR</option>
+          <option>Tech Without a Degree</option>
+          <option>HVAC</option>
+          <option>Culinary</option>
+          <option>Entrepreneurship</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div>
+        <label class="f-label">What did you learn that others should know?</label>
+        <textarea name="intel" class="f-ta" placeholder="A contact, a resource, a gap, a tip -- anything real helps."></textarea>
+      </div>
+      <div>
+        <label class="f-label">Who should we talk to? (optional)</label>
+        <input type="text" name="contact" class="f-input" placeholder="Name and how to reach them">
+      </div>
+      <button type="submit" class="f-submit" id="form-submit-btn">Add to the Grid</button>
+    </form>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section class="resources" id="resources">
+  <div class="resources-inner">
+    <div class="section-head">
+      <div class="eyebrow sr">Quick Access</div>
+      <h2 class="section-h2 sr d1">Links That <em>Actually Help</em></h2>
+      <p class="section-desc sr d2">Real resources with real information. No broken links, no paywalls, no forms that go nowhere.</p>
+    </div>
+    <div class="res-grid">
+
+      <!-- Wide card: IBEW + IEC side by side -->
+      <div class="res-card wide sr">
+        <div>
+          <div class="res-cat">Electrical -- Union</div>
+          <div class="res-title">IBEW Local 369 / JATC</div>
+          <p class="res-body">Louisville Electrical JATC at 4315 Preston Highway, Suite 100. Call (502) 581-9210 to ask when the next application window opens. Monitor Facebook: Kentuckiana Electrical Apprenticeship. Application is currently closed.</p>
+          <a href="https://loujatc.com" target="_blank" rel="noopener" class="res-link">loujatc.com</a>
+        </div>
+        <div>
+          <div class="res-cat">Electrical -- Non-Union</div>
+          <div class="res-title">IEC Kentuckiana</div>
+          <p class="res-body">Application opens April 1, 2026 for the 2026-27 year. Plug In Saturday: April 18 for just $100. Contact Stephen Burch at sburch@ieckyin.org before you fill out the formal application.</p>
+          <a href="https://iec-kyin.com" target="_blank" rel="noopener" class="res-link">iec-kyin.com</a>
+        </div>
+      </div>
+
+      <div class="res-card sr d1">
+        <div class="res-cat">Community College</div>
+        <div class="res-title">JCTC Downtown Campus</div>
+        <p class="res-body">Electrical Technology program at the downtown campus. Tour available by appointment. Ask about dual enrollment if still in high school. Graduates earn 51 credits toward an Associate degree.</p>
+        <a href="https://jefferson.kctcs.edu" target="_blank" rel="noopener" class="res-link">jefferson.kctcs.edu</a>
+      </div>
+
+      <div class="res-card sr d2">
+        <div class="res-cat">FAA Certification</div>
+        <div class="res-title">Part 107 Drone License</div>
+        <p class="res-body">The commercial drone operator certification. $175 exam fee. No age minimum beyond 16. Pass once, renew online every 24 months. Study at FAASafety.gov or use a prep course. The real entry point for drone careers.</p>
+        <a href="https://www.faa.gov/uas/commercial_operators/become_a_drone_pilot" target="_blank" rel="noopener" class="res-link">FAA Part 107 Guide</a>
+      </div>
+
+      <div class="res-card sr">
+        <div class="res-cat">Free Coding</div>
+        <div class="res-title">Code Louisville</div>
+        <p class="res-body">City-sponsored and free. Web dev and data tracks. Real mentors. One of the most underused resources for Louisville young people interested in tech without a CS degree credential attached.</p>
+        <a href="https://codelouisville.org" target="_blank" rel="noopener" class="res-link">codelouisville.org</a>
+      </div>
+
+      <div class="res-card sr d1">
+        <div class="res-cat">Test Prep</div>
+        <div class="res-title">ElectricPrep.com</div>
+        <p class="res-body">JATC-recommended test prep for the NJATC aptitude exam (algebra and reading). The math section is the most common stumble. Start studying before the window opens, not after.</p>
+        <a href="https://electricprep.com" target="_blank" rel="noopener" class="res-link">electricprep.com</a>
+      </div>
+
+      <div class="res-card sr d2">
+        <div class="res-cat">Pre-Apprenticeship</div>
+        <div class="res-title">Kentuckiana Builds</div>
+        <p class="res-body">Free six-week program through Louisville Urban League. Prepares you for IEC or IBEW entry. If the requirements feel out of reach today, this is where you start. 502-808-1056.</p>
+        <a href="tel:5028081056" class="res-link">502-808-1056</a>
+      </div>
+
+      <div class="res-card sr">
+        <div class="res-cat">State Licensing</div>
+        <div class="res-title">Kentucky DHBC</div>
+        <p class="res-body">Department of Housing, Buildings and Construction issues all journeyman and master electrician licenses in Kentucky. (502) 573-2002. The finish line for every electrical pathway in the state.</p>
+        <a href="https://dhbc.ky.gov" target="_blank" rel="noopener" class="res-link">dhbc.ky.gov</a>
+      </div>
+
+      <div class="res-card sr d1">
+        <div class="res-cat">Mentorship</div>
+        <div class="res-title">SCORE Louisville</div>
+        <p class="res-body">Free one-on-one mentorship from actual business veterans. Best for anyone thinking about owning their own shop eventually. Do not wait until you feel "ready." That moment doesn't come on its own.</p>
+        <a href="https://louisville.score.org" target="_blank" rel="noopener" class="res-link">louisville.score.org</a>
+      </div>
+
+      <div class="res-card sr d2">
+        <div class="res-cat">Workforce Gateway</div>
+        <div class="res-title">KY Skills U</div>
+        <p class="res-body">GED, WorkKeys, industry certifications. The bridge between where you are and where the programs require you to be. Free or low-cost. The state's best kept resource for people getting started over or starting fresh.</p>
+        <a href="https://skillsu.ky.gov" target="_blank" rel="noopener" class="res-link">skillsu.ky.gov</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CALLOUT STRIP -->
+<div class="strip">
+  <div class="strip-inner">
+    <div class="strip-text sr">
+      The map is <em>incomplete.</em><br>That's the point.
+    </div>
+    <a href="#contribute" class="btn btn-fill sr d2">Add What You Know</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="f-logo">THE <span>GRID</span></div>
+        <p class="f-tagline">Louisville's open-source career intelligence network. Built by parents, practitioners, and young people who figured it out and want to make it easier for the next one.</p>
+      </div>
+      <div>
+        <div class="f-col-title">Pathways</div>
+        <ul class="f-links">
+          <li><a href="#pathways">Electrical Trades</a></li>
+          <li><a href="#pathways">Drone Mapping</a></li>
+          <li><a href="#pathways">Tech Without a Degree</a></li>
+          <li><a href="#pathways">HVAC Systems</a></li>
+          <li><a href="#pathways">Culinary Arts</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="f-col-title">Organizations</div>
+        <ul class="f-links">
+          <li><a href="https://loujatc.com" target="_blank" rel="noopener">IBEW / JATC</a></li>
+          <li><a href="https://iec-kyin.com" target="_blank" rel="noopener">IEC Kentuckiana</a></li>
+          <li><a href="https://jefferson.kctcs.edu" target="_blank" rel="noopener">JCTC</a></li>
+          <li><a href="https://codelouisville.org" target="_blank" rel="noopener">Code Louisville</a></li>
+          <li><a href="https://acementor.org" target="_blank" rel="noopener">ACE Mentor</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="f-col-title">Connect</div>
+        <ul class="f-links">
+          <li><a href="#contribute">Share What You Know</a></li>
+          <li><a href="#resources">Resources</a></li>
+          <li><a href="mailto:hello@thegridlouisville.com">hello@thegridlouisville.com</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="f-copy">2026 The Grid Louisville. Open source. Community built.</span>
+      <span class="f-credit">Built with <span>Work Architecture</span></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+  /* ---- SCROLL PROGRESS ---- */
+  const fill = document.getElementById('progress-fill');
+  function updateProgress() {
+    const top = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    fill.style.width = (top / total * 100).toFixed(2) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+
+  /* ---- HERO PARALLAX ---- */
+  const heroBg = document.getElementById('hero-bg');
+  function updateParallax() {
+    const y = window.scrollY;
+    // Only run if hero is in view
+    if (y < window.innerHeight * 1.5) {
+      heroBg.style.transform = `scale(1.1) translateY(${y * 0.38}px)`;
+    }
+  }
+  window.addEventListener('scroll', updateParallax, { passive: true });
+
+  /* ---- NAV OPACITY ---- */
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 80
+      ? 'rgba(12,12,12,0.98)'
+      : 'rgba(12,12,12,0.94)';
+  }, { passive: true });
+
+  /* ---- SCROLL REVEAL (fires immediately for above-fold elements) ----
+     The classic bug: IntersectionObserver only fires when threshold
+     is crossed. Elements already in view on load never get observed.
+     Fix: after observer is set up, immediately check all .sr elements
+     that are already visible and mark them .on right away.
+  ---- */
+  const srObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('on');
+        // Stop watching once revealed
+        srObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+  const srEls = document.querySelectorAll('.sr');
+
+  srEls.forEach(el => {
+    srObserver.observe(el);
+  });
+
+  // Immediate reveal for elements already in viewport on load
+  function revealInViewport() {
+    srEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('on');
+        srObserver.unobserve(el);
+      }
+    });
+  }
+
+  // Run on load and after a short delay to catch initial paint
+  revealInViewport();
+  setTimeout(revealInViewport, 120);
+  window.addEventListener('load', revealInViewport);
+
+  /* ---- COUNTER ANIMATION ---- */
+  const counters = document.querySelectorAll('.count[data-target]');
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.target, 10);
+      if (target === 0) { el.textContent = '0'; return; }
+      const duration = 1600;
+      const frameRate = 16;
+      const steps = duration / frameRate;
+      const increment = target / steps;
+      let current = 0;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          el.textContent = target;
+          clearInterval(timer);
+        } else {
+          el.textContent = Math.floor(current);
+        }
+      }, frameRate);
+      counterObs.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(c => counterObs.observe(c));
+
+  /* ---- ORGS HORIZONTAL DRAG SCROLL ---- */
+  const scroller = document.getElementById('orgs-scroll');
+  let isDown = false, startX, scrollLeft;
+
+  scroller.addEventListener('mousedown', e => {
+    isDown = true;
+    scroller.style.cursor = 'grabbing';
+    startX = e.pageX - scroller.offsetLeft;
+    scrollLeft = scroller.scrollLeft;
+  });
+  scroller.addEventListener('mouseleave', () => {
+    isDown = false;
+    scroller.style.cursor = 'grab';
+  });
+  scroller.addEventListener('mouseup', () => {
+    isDown = false;
+    scroller.style.cursor = 'grab';
+  });
+  scroller.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scroller.offsetLeft;
+    const walk = (x - startX) * 1.4;
+    scroller.scrollLeft = scrollLeft - walk;
+  });
+
+  /* ---- PATH FINDER QUIZ ---- */
+  const QUIZ_DATA = {
+    questions: [
+      {
+        q: "What sounds like your kind of day?",
+        opts: [
+          { label: "Physical work, real results",  sub: "Hands-on. You build something that exists when you're done.", w: { electrical:3, hvac:3, drone:1 } },
+          { label: "Tech and data",                sub: "Screens, sensors, systems. You want to work with how things think.", w: { drone:3, tech:3, electrical:1 } },
+          { label: "People and ideas",             sub: "Conversations, creativity, building something from the ground up.", w: { business:3, culinary:2, tech:1 } },
+          { label: "Honestly, some of all of it",  sub: "You're not a one-lane kind of person and that's fine.", w: { electrical:1, drone:1, tech:1, business:1 } }
+        ]
+      },
+      {
+        q: "How fast do you want to start earning?",
+        opts: [
+          { label: "Right away",                  sub: "Earn while I learn. I'm not waiting two years for a paycheck.", w: { electrical:3, hvac:3, drone:2 } },
+          { label: "A year or two is fine",        sub: "I'll invest time upfront if the payoff is real.", w: { tech:3, culinary:2, drone:2 } },
+          { label: "I'm playing the long game",    sub: "I want to build something that scales, not just get a job.", w: { business:3, tech:2, electrical:1 } }
+        ]
+      },
+      {
+        q: "What's the ceiling you're aiming for?",
+        opts: [
+          { label: "Steady $60-80K",              sub: "Rock solid income, high demand, no drama. That's enough.", w: { hvac:3, electrical:2, tech:1 } },
+          { label: "$100K+ -- I'll find a way",   sub: "You want the high end. You'll put in the work to get there.", w: { electrical:3, drone:3, tech:2 } },
+          { label: "I want my own operation",     sub: "Boss mode. Not right away, but that's where you're headed.", w: { business:3, electrical:2, culinary:2 } }
+        ]
+      }
+    ],
+    results: {
+      electrical: { name: "Electrical Trades",      desc: "Louisville's biggest construction boom in history and IBEW Local 369 is actively recruiting. Zero tuition, $41/hr journeyman rate, full benefits, and national portability. IEC Kentuckiana opens enrollment April 1 if you want the faster path to owning your own shop.", stats: [{val:"$41/hr",key:"Journeyman Rate"},{val:"$0",key:"IBEW Tuition"},{val:"4 yrs",key:"To Journeyman"}] },
+      drone:      { name: "Drone Mapping",          desc: "Louisville has two regional competitors and one California operator pulling local contracts. That gap is your opening. A Part 107 cert is $175. A good survey drone is $15K. The collector model is real, the margins are solid, and the market is wide open.", stats: [{val:"$175",key:"Part 107 Exam"},{val:"$65K+",key:"Year 3 Ceiling"},{val:"2",key:"Regional Competitors"}] },
+      tech:       { name: "Tech Without the Degree",desc: "Code Louisville is city-funded and free. Web dev, data analytics, real mentors. Portfolio beats credential in most Louisville tech hiring rooms. The remote market opens the national salary ceiling without relocating.", stats: [{val:"Free",key:"Code Louisville"},{val:"$55-90K",key:"Market Range"},{val:"Remote",key:"Options Real"}] },
+      hvac:       { name: "HVAC Systems",           desc: "Every building in Louisville runs on HVAC. JCTC has a full program downtown. Two years to certification, steady demand, and a clear path to owning your own shop if that's the move eventually.", stats: [{val:"$55K",key:"Louisville Median"},{val:"2 yrs",key:"To Certification"},{val:"JCTC",key:"Louisville Program"}] },
+      business:   { name: "Entrepreneurship",       desc: "The Louisville ecosystem is real -- SCORE mentors, Logan Street Market incubators, cottage food law, accelerators. Every trade path leads to ownership if you want it. The question is which sector you're most fired up about.", stats: [{val:"Free",key:"SCORE Mentors"},{val:"No Limit",key:"Ceiling"},{val:"Louisville",key:"Ecosystem"}] },
+      culinary:   { name: "Culinary Louisville",    desc: "NuLu has a real scene and a real path into it. Stage at a strong restaurant, work your way up, or go straight to the Logan Street Market incubator model. Kentucky cottage food law makes the home-based start legal and viable right now.", stats: [{val:"NuLu",key:"Scene + Mentors"},{val:"Logan St",key:"Market Incubator"},{val:"KY Cottage",key:"Food Law Path"}] }
+    }
+  };
+
+  let qzScores = { electrical:0, drone:0, tech:0, hvac:0, business:0, culinary:0 };
+  let qzStep = 0;
+
+  function qzRender(step) {
+    const q = QUIZ_DATA.questions[step];
+    document.getElementById('quiz-step-label').textContent = `Question ${step+1} of ${QUIZ_DATA.questions.length}`;
+    document.getElementById('quiz-q-text').textContent = q.q;
+
+    const optsEl = document.getElementById('quiz-opts');
+    optsEl.innerHTML = q.opts.map((opt, i) => `
+      <button class="quiz-opt" data-idx="${i}" aria-label="${opt.label}">
+        <div class="quiz-opt-label">${opt.label}</div>
+        <div class="quiz-opt-sub">${opt.sub}</div>
+      </button>`).join('');
+
+    optsEl.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = QUIZ_DATA.questions[qzStep].opts[parseInt(btn.dataset.idx)];
+        for (const [k, v] of Object.entries(chosen.w)) qzScores[k] = (qzScores[k]||0) + v;
+        qzNext();
+      });
+    });
+
+    document.querySelectorAll('.q-dot').forEach((dot, i) => {
+      dot.classList.remove('active','done');
+      if (i < step) dot.classList.add('done');
+      if (i === step) dot.classList.add('active');
+    });
+  }
+
+  function qzNext() {
+    qzStep++;
+    if (qzStep >= QUIZ_DATA.questions.length) { qzShowResult(); return; }
+    const qEl = document.getElementById('quiz-question');
+    qEl.style.opacity = '0'; qEl.style.transform = 'translateY(14px)';
+    setTimeout(() => {
+      qzRender(qzStep);
+      qEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      qEl.style.opacity = '1'; qEl.style.transform = 'translateY(0)';
+    }, 200);
+  }
+
+  function qzShowResult() {
+    const winner = Object.entries(qzScores).sort((a,b) => b[1]-a[1])[0][0];
+    const res = QUIZ_DATA.results[winner];
+    document.getElementById('qr-pathway-name').textContent = res.name;
+    document.getElementById('qr-pathway-desc').textContent = res.desc;
+    document.getElementById('qr-stats').innerHTML = res.stats.map(s =>
+      `<div><div class="qr-stat-val">${s.val}</div><span class="qr-stat-key">${s.key}</span></div>`).join('');
+    document.getElementById('quiz-progress').style.display = 'none';
+    document.getElementById('quiz-question').style.display = 'none';
+    const resEl = document.getElementById('quiz-result');
+    resEl.classList.add('show');
+    resEl.style.opacity = '0'; resEl.style.transform = 'translateY(20px)';
+    setTimeout(() => { resEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; resEl.style.opacity = '1'; resEl.style.transform = 'translateY(0)'; }, 40);
+  }
+
+  document.getElementById('quiz-reset').addEventListener('click', () => {
+    qzScores = { electrical:0, drone:0, tech:0, hvac:0, business:0, culinary:0 };
+    qzStep = 0;
+    document.getElementById('quiz-progress').style.display = 'flex';
+    const qEl = document.getElementById('quiz-question');
+    qEl.style.display = 'block'; qEl.style.opacity = '1'; qEl.style.transform = 'translateY(0)';
+    const resEl = document.getElementById('quiz-result');
+    resEl.classList.remove('show'); resEl.style.opacity = '0';
+    qzRender(0);
+  });
+
+  qzRender(0);
+
+  /* ---- SHARE BUTTONS ---- */
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const pathway = btn.dataset.pathway || 'The Grid';
+      const url = window.location.href.split('#')[0] + '#pathways';
+      const svgIcon = btn.querySelector('svg') ? btn.querySelector('svg').outerHTML : '';
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `${pathway} on The Grid Louisville`,
+            text: `Check out the ${pathway} pathway -- real careers, zero $80K debt requirement. Louisville's career intelligence network.`,
+            url
+          });
+        } catch(e) { /* user cancelled */ }
+      } else {
+        try {
+          await navigator.clipboard.writeText(`${url} -- ${pathway} on The Grid Louisville`);
+          btn.innerHTML = `${svgIcon} Link copied!`;
+          setTimeout(() => { btn.innerHTML = `${svgIcon} Share this path`; }, 2200);
+        } catch(e) { /* clipboard blocked */ }
+      }
+    });
+  });
+
+  /* ---- ASYNC FORM (Formspree) ---- */
+  const gridForm = document.getElementById('grid-form');
+  gridForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('form-submit-btn');
+    const orig = btn.textContent;
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    // No Formspree ID yet -- show success state locally
+    if (gridForm.action.includes('YOUR_FORM_ID')) {
+      setTimeout(() => {
+        btn.textContent = 'Added to the Grid. Thank you.';
+        btn.style.background = 'rgba(0,0,0,0.15)';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; gridForm.reset(); }, 3600);
+      }, 700);
+      return;
+    }
+
+    try {
+      const res = await fetch(gridForm.action, { method:'POST', body: new FormData(gridForm), headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        btn.textContent = 'Added to the Grid. Thank you.';
+        btn.style.background = 'rgba(0,0,0,0.15)';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; gridForm.reset(); }, 3800);
+      } else {
+        btn.textContent = 'Something went wrong -- try again.';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      btn.textContent = 'Something went wrong -- try again.';
+      btn.disabled = false;
+    }
+  });
+
+  /* ---- SMOOTH ANCHOR SCROLL (accounts for fixed nav height) ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+      const target = document.querySelector(anchor.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      const offset = 64;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
